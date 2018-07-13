@@ -60,7 +60,7 @@ class Perceptron:
     # incializa o perceptron
     def __init__(self, entradas, saidas, epocas, limiar, taxa_aprendizagem):
         self.entradas = entradas                # entradas para teste
-        self.saidas = saidas                    # suas saidas esperadas
+        self.saidas = saidas                    # suas saidas esperadas para cada entrada
         self.epocas = epocas
         self.limiar = limiar
         self.taxa_aprendizagem = taxa_aprendizagem
@@ -69,8 +69,8 @@ class Perceptron:
         self.total_variaveis_entrada = len(entradas[0])
 
     def treinar(self):
-        for i in range(self.total_entradas):                                            # um vetor de vetores, onde cada posição armazena um vetor com os pesos referentes a cada variavel da entrada
-            self.pesos.append(np.random.random_sample(self.total_variaveis_entrada))    # preencher o vetor que armazena os pesos
+        for i in range(self.total_entradas):                                            # onde cada posição armazena um vetor com os pesos iniciais
+            self.pesos.append(np.random.random_sample())                                # preencher o vetor que armazena os pesos
 
         # TODO terminar de rodar quando acabar as eras? ou quando nao estiver mais erros? ou os dois?
         for i in range(self.epocas):                        # roda o algoritmo ate terminar as eras estabelecidas
@@ -79,8 +79,8 @@ class Perceptron:
             for j in range(self.total_entradas):            # repetir o processo a quantidade total de entradas
                 somatorio = 0
 
-                for posicao in range(self.total_variaveis_entrada):              # somar os pesos com as entradas
-                    somatorio += self.pesos[j][posicao] * self.entradas[j][posicao]
+                for posicao in range(self.total_variaveis_entrada):              # somar os pesos com as variaveis da entrada
+                    somatorio += self.pesos[posicao] * self.entradas[j][posicao]
 
                 # função de ativação
                 if somatorio >= self.limiar: saida = 1
@@ -91,6 +91,6 @@ class Perceptron:
                     erro_auxiliar = self.saidas[j] - saida
 
                     for posicao in range(self.total_variaveis_entrada):             # corrigir o peso agora para cada entrada dessa rodada
-                        self.pesos[j][posicao] = self.pesos[j][posicao] + (self.taxa_aprendizagem * erro_auxiliar * self.entradas[j][posicao])
+                        self.pesos[posicao] = self.pesos[posicao] + (self.taxa_aprendizagem * erro_auxiliar * self.entradas[j][posicao])
 
     #def executar(self):
