@@ -48,11 +48,6 @@ Variáveis necessárias:
     4 - função de aprendizado
 '''
 
-
-'''
-acho
-'''
-
 # Perceptron com apenas uma camada
 class Perceptron:
     # TODO define um valor para o limiar, epoca e a taxa de aprendizagem?
