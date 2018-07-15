@@ -2,6 +2,13 @@
 # encoding: iso-8859-1
 # encoding: win-1252
 
+'''
+codigo: http://scikit-image.org/docs/dev/auto_examples/features_detection/plot_hog.html
+versão: 0.14
+
+se não rodar fazer o comando: pip install -U scikit-image
+'''
+
 import cv2
 import os
 import imutils
@@ -18,10 +25,13 @@ for im_file in images:
 	print im_path
 
 	im = cv2.imread(im_path)
-	# redimencionar a imagem para ter uma proporção 1x2
 	resized_image = imutils.resize(im, width=80, height=80)
 
-	fd, hog_image = hog(resized_image, orientations=8, pixels_per_cell=(16, 16),cells_per_block=(1, 1), visualize=True)
+	fd, hog_image = hog(resized_image, orientations=8, pixels_per_cell=(16, 16),cells_per_block=(1, 1), visualize=True,
+	                    feature_vector=True)
+
+	#vetor de caracteristica
+	print(fd)
 
 	# Rescale histogram for better display
 	hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
