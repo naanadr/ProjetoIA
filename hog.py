@@ -13,29 +13,37 @@ import cv2
 import os
 import imutils
 from skimage.feature import hog
-from skimage import exposure
 
-path ="DataBase\\Nodule_x1\\Diagx1\\"
-path2 = "Imagens_teste\\"
-#path3 = "D:\\Bases\\Pulmao\\LUNA_raissa\\Luna_worked\\Cortes_jpg\\Nodule\\Diagx1\\"
-images = os.listdir(path)
+arquivos = ["DataBase\\Nodule_x1\\Diagx1\\", "DataBase\\Nan_nodule_x1\\Diagx1\\"]
 
-for im_file in images:
-	im_path = path + im_file
-	print im_path
+cont = 0
+for path in arquivos:
+	images = os.listdir(path)
 
-	im = cv2.imread(im_path)
-	resized_image = imutils.resize(im, width=80, height=80)
+	for im_file in images:
+		vetor_caracteristica = []
 
-	fd, hog_image = hog(resized_image, orientations=8, pixels_per_cell=(16, 16),cells_per_block=(1, 1), visualize=True,
-	                    feature_vector=True)
+		arq = open('pulmao.arff', 'a+')
 
-	#vetor de caracteristica
-	print(fd)
+		im_path = path + im_file
+		print im_path
 
-	# Rescale histogram for better display
-	hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
+		im = cv2.imread(im_path)
+		resized_image = imutils.resize(im, width=80, height=80)
 
-	cv2.imshow('hog', hog_image_rescaled)
-	cv2.imshow('original', im)
-	cv2.waitKey(0)
+		fd, hog_image = hog(resized_image, orientations=8, pixels_per_cell=(16, 16),cells_per_block=(1, 1), visualize=True,
+		                    feature_vector=True)
+
+		vetor_caracteristica.append(fd)
+
+		row = ""
+		for i in range(len(fd)):
+			row += str(fd[i]) + ","
+
+		# se é nodulo ou não:
+		row += str(cont) + '\n'
+
+		arq.write(row)
+		arq.close()
+
+	cont += 1
