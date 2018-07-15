@@ -3,6 +3,7 @@
 # encoding: win-1252
 
 import numpy as np
+import copy
 
 '''
 Descrição do algoritmo:
@@ -57,20 +58,22 @@ class Perceptron:
         self.entradas = entradas                # entradas para teste
         self.saidas = saidas                    # suas saidas esperadas para cada entrada
         self.epocas = epocas
-        self.limiar = limiar
+        #self.limiar = limiar                   # não usei o limiar, por causa da função de ativação
         self.taxa_aprendizagem = taxa_aprendizagem
         self.pesos = []                         # vetor com os pesos que serão atribuidos a cada entrada
         self.total_entradas = len(entradas)     # quantidade total de entradas que serão testadas
         self.total_variaveis_entrada = len(entradas[0])
 
     def treinar(self):
+        # adiciona -1 para cada uma das amostras
+        for amostra in self.entradas:
+            amostra.insert(0, -1)
         for i in range(self.total_entradas):                                            # onde cada posição armazena um vetor com os pesos iniciais
             self.pesos.append(np.random.random_sample())                                # preencher o vetor que armazena os pesos
 
         # TODO terminar de rodar quando acabar as eras? ou quando nao estiver mais erros? ou os dois?
         for i in range(self.epocas):                        # roda o algoritmo ate terminar as eras estabelecidas
-            #erro = False                                    # erro inicialmente falso
-
+            erro = False
             for j in range(self.total_entradas):            # repetir o processo a quantidade total de entradas
                 somatorio = 0
 
@@ -78,14 +81,35 @@ class Perceptron:
                     somatorio += self.pesos[posicao] * self.entradas[j][posicao]
 
                 # função de ativação
-                if somatorio >= self.limiar: saida = 1
-                else: saida = 0
+                saida = self.ativacao(somatorio)
 
                 if saida != self.saidas[j]:
-                    #erro = True
+                    erro = True
                     erro_auxiliar = self.saidas[j] - saida
 
                     for posicao in range(self.total_variaveis_entrada):             # corrigir o peso agora para cada entrada dessa rodada
                         self.pesos[posicao] = self.pesos[posicao] + (self.taxa_aprendizagem * erro_auxiliar * self.entradas[j][posicao])
 
-    #def executar(self):
+            if not erro:
+                break
+    def testar(self, amostra, classe1, classe2):
+        # insere o -1
+        amostra.insert(0, -1)
+
+        # utiliza o vetor de pesos que foi ajustado na fase de treinamento
+        u = 0
+        for i in range(self.total_variaveis_entrada):
+            u += self.pesos[i] * amostra[i]
+
+        # calcula a saída da rede
+        y = self.ativacao(u)
+
+        # verifica a qual classe pertence
+        if y == -1:
+            print('A amostra pertence a classe %s' % classe1)
+        else:
+            print('A amostra pertence a classe %s' % classe2)
+
+    # função de ativação do tipo degrau bipolar (pode testar outras depois)
+    def ativacao(self, u):
+        return 1 if u >= 0 else -1
