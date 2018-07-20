@@ -103,13 +103,39 @@ class Perceptron:
 			# se achar os melhores valores antes do fim das eras
 			if not erro:
 				break
-	def testar(self, amostras):
+
+	def testar(self):
+		resposta_esperada = []
+		amostras = []
+		arquivo = "DataBase\\Teste\\"
+		local = os.listdir(arquivo)
+		cont = 0
+		for im_file in local:
+			vetor_caracteristica_aux = []
+
+			im_path = arquivo + im_file
+
+			im = cv2.imread(im_path)
+			resized_image = imutils.resize(im, width=80, height=80)
+
+			fd, hog_image = hog(resized_image, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(3, 3),
+			                    visualize=True, feature_vector=True)
+
+			for i in range(len(fd)):
+				teste = float(fd[i])
+				vetor_caracteristica_aux.append(teste)
+
+			string_aux = im_file.split('.')[0]
+			if 'nodule' == string_aux:
+				cont = 1
+			elif 'nannodule' == string_aux:
+				cont = 0
+
+			resposta_esperada.append(cont)
+			amostras.append(vetor_caracteristica_aux)
+
 		resposta = []
-
 		for amostra in amostras:
-			# insere o -1
-			#amostra.insert(0, -1)
-
 			# utiliza o vetor de pesos que foi ajustado na fase de treinamento
 			u = 0
 			for i in range(self.total_variaveis_entrada):
@@ -120,7 +146,7 @@ class Perceptron:
 
 			resposta.append(y)
 
-		return resposta
+		return resposta, resposta_esperada
 
 	# função de ativação do tipo bipolar (bipolar pq so tem dois valores de saida)
 	# +1 ativo e 0 inativo, com 0 como limiar
@@ -132,33 +158,36 @@ class hog_gerador:
 	def __init__(self):
 		self.vetor_caracteristica = []
 		self.saidas_esperadas = []
-		self.arquivos = ["DataBase\\Nodule_x1\\Treinamento\\", "DataBase\\Nan_nodule_x1\\Treinamento\\"]
+		self.arquivos = "DataBase\\Treinamento\\"
 
 	def gerar_vetor(self):
-		cont = 1
-		for path in self.arquivos:
-			local = os.listdir(path)
+		local = os.listdir(self.arquivos)
+		cont = 0
 
-			for im_file in local:
-				vetor_caracteristica_aux = []
+		for im_file in local:
+			vetor_caracteristica_aux = []
 
-				im_path = path + im_file
+			im_path = self.arquivos + im_file
 
-				im = cv2.imread(im_path)
-				resized_image = imutils.resize(im, width=80, height=80)
+			im = cv2.imread(im_path)
+			resized_image = imutils.resize(im, width=80, height=80)
 
-				fd, hog_image = hog(resized_image, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(3,3),
-										  visualize=True, feature_vector=True)
+			fd, hog_image = hog(resized_image, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(3,3),
+									  visualize=True, feature_vector=True)
 
-				for i in range(len(fd)):
-					teste = float(fd[i])
-					vetor_caracteristica_aux.append(teste)
+			for i in range(len(fd)):
+				teste = float(fd[i])
+				vetor_caracteristica_aux.append(teste)
 
-				vetor_caracteristica_aux.append(cont)
+			string_aux = im_file.split('.')[0]
+			if 'nodule' == string_aux:
+				cont = 1
+			elif 'nannodule' == string_aux:
+				cont = 0
+			vetor_caracteristica_aux.append(cont)
 
-				self.vetor_caracteristica.append(vetor_caracteristica_aux)
+			self.vetor_caracteristica.append(vetor_caracteristica_aux)
 
-			cont -= 1
 		random.shuffle(self.vetor_caracteristica)
 
 	def retirar_informacoes(self):
@@ -186,19 +215,18 @@ print 'retirar_informacoes...'
 entradas, saidas = hogControlador.retirar_informacoes()
 
 # variando eras e taxa de aprendizado
-perceptronControlador = Perceptron(1000, 0.1, entradas, saidas, -1)
+perceptronControlador = Perceptron(200, 0.1, entradas, saidas, -1)
+
 print 'treinar...'
 perceptronControlador.treinar()
 
-respostas = []
 print 'testar...'
-entradas_teste = copy.deepcopy(entradas)
-respostas = perceptronControlador.testar(entradas_teste)
+resposta_obtida, resposta_esperada = perceptronControlador.testar()
 
 similar = 0
 print 'somando...'
-for i in range(len(entradas)):
-	if saidas[i] == respostas[i]: similar += 1
+for i in range(len(resposta_obtida)):
+	if resposta_obtida[i] == resposta_esperada[i]: similar += 1
 
 print similar
-print 'total ', len(entradas)
+print 'total ', len(resposta_obtida)
