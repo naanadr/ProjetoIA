@@ -19,10 +19,11 @@ for arquivo in vetor_aux:
 	img = cv2.imread(arquivo)
 
 	if 'Nodule_x1' in arquivo:
-		novo = 'nodule' + arquivo.split('diagx11')[1]
+		novo = 'nodule_' + arquivo.split('diagx11')[1]
 	elif 'Nan_nodule_x1' in arquivo:
-		novo = 'nannodule' + arquivo.split('diagx11')[1]
-
+		novo = 'nannodule_' + arquivo.split('diagx11')[1]
+		print arquivo.split('diagx11')[1]
+"""
 	vetor_aux2.append(novo)
 	cv2.imwrite("DataBase\\Total\\" + novo, img)
 
@@ -51,3 +52,4 @@ for pos in range(lim1, total_arquivos):
 	arquivo_completo_novo = local_teste + vetor_aux2[pos]
 
 	shutil.move(arquivo_completo_antigo, arquivo_completo_novo)
+	"""

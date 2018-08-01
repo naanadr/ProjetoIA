@@ -107,7 +107,7 @@ class Perceptron:
 	def testar(self):
 		resposta_esperada = []
 		amostras = []
-		arquivo = "DataBase\\Teste\\"
+		arquivo = teste
 		local = os.listdir(arquivo)
 		cont = 0
 		for im_file in local:
@@ -158,7 +158,7 @@ class hog_gerador:
 	def __init__(self):
 		self.vetor_caracteristica = []
 		self.saidas_esperadas = []
-		self.arquivos = "DataBase\\Treinamento\\"
+		self.arquivos = treinar
 
 	def gerar_vetor(self):
 		local = os.listdir(self.arquivos)
@@ -203,30 +203,42 @@ class hog_gerador:
 
 		return entradas, saidas
 
-
 # ---------------------------------------------------------------------------------------------------
-hogControlador = hog_gerador()
-print 'gerar vetor...'
-hogControlador.gerar_vetor()
+# MAIN:
+for i in range(5):
+	teste = "string_path"+str(i)             #Separar para Teste
+	for n in range(5):
+		if not n == i:
+            treino = "string_path"+str(n)    #Treino da vez
 
-entradas = []
-saidas = []
-print 'retirar_informacoes...'
-entradas, saidas = hogControlador.retirar_informacoes()
+			hogControlador = hog_gerador()
+			print 'gerar vetor...'
+			hogControlador.gerar_vetor()
 
-# variando eras e taxa de aprendizado
-perceptronControlador = Perceptron(200, 0.1, entradas, saidas, -1)
+			entradas = []
+			saidas = []
+			print 'retirar_informacoes...'
+			entradas, saidas = hogControlador.retirar_informacoes()
 
-print 'treinar...'
-perceptronControlador.treinar()
+			# variando eras e taxa de aprendizado
+			perceptronControlador = Perceptron(100, 0.1, entradas, saidas, -1)
 
-print 'testar...'
-resposta_obtida, resposta_esperada = perceptronControlador.testar()
+			print 'treinar...'
+			perceptronControlador.treinar()
 
-similar = 0
-print 'somando...'
-for i in range(len(resposta_obtida)):
-	if resposta_obtida[i] == resposta_esperada[i]: similar += 1
+			print 'testar...'
+			resposta_obtida, resposta_esperada = perceptronControlador.testar()
 
-print similar
-print 'total ', len(resposta_obtida)
+			similar = 0
+			print 'somando...'
+			for i in range(len(resposta_obtida)):
+				if resposta_obtida[i] == resposta_esperada[i]: similar += 1
+			total = len(resposta_obtida)
+			accuracy = float(similar)/ float(total)
+
+			print 'acertados ', similar
+			print 'total ', total
+			print 'acuracia',accuracy
+			#200 caracteristicas no hog
+			#200 pesos
+			#ativacao bipolar
