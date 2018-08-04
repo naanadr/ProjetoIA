@@ -205,6 +205,7 @@ class hog_gerador:
 
 # ---------------------------------------------------------------------------------------------------
 # MAIN:
+accuracy_array = list()
 for i in range(5):
 	teste = "string_path"+str(i)             #Separar para Teste
 	for n in range(5):
@@ -225,20 +226,25 @@ for i in range(5):
 
 			print 'treinar...'
 			perceptronControlador.treinar()
+            
+    print 'testar...'
+	resposta_obtida, resposta_esperada = perceptronControlador.testar()
 
-			print 'testar...'
-			resposta_obtida, resposta_esperada = perceptronControlador.testar()
+	similar = 0
+	print 'somando...'
+	for i in range(len(resposta_obtida)):
+		if resposta_obtida[i] == resposta_esperada[i]: similar += 1
+	total = len(resposta_obtida)
+	accuracy = float(similar)/ float(total)
+	accuracy_array.append(accuracy)
 
-			similar = 0
-			print 'somando...'
-			for i in range(len(resposta_obtida)):
-				if resposta_obtida[i] == resposta_esperada[i]: similar += 1
-			total = len(resposta_obtida)
-			accuracy = float(similar)/ float(total)
-
-			print 'acertados ', similar
-			print 'total ', total
-			print 'acuracia',accuracy
-			#200 caracteristicas no hog
-			#200 pesos
-			#ativacao bipolar
+	print 'acertados ', similar
+	print 'total ', total
+	print 'acuracia',accuracy
+	#200 caracteristicas no hog
+	#200 pesos
+	#ativacao bipolar
+for i in accuracy_array:
+	print i
+	soma = soma + i
+result = soma /5
