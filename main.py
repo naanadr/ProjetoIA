@@ -2,6 +2,14 @@
 # encoding: iso-8859-1
 # encoding: win-1252
 
+'''Informações para o relatorio:
+as figuras tem dimensões diferentes que variam de 64-65 (h e w) ou 60-65....
+- tamanho novo 80-80
+
+gerar um vetor com as informações das imagens
+serão 80 vetores, com 80 informações em cada um
+'''
+
 import cv2
 import os
 import imutils
@@ -51,6 +59,7 @@ class Perceptron:
 											  (self.taxa_aprendizagem * erro_auxiliar * self.entradas[j][posicao])
 			# se achar os melhores valores antes do fim das eras
 			if not erro:
+				print 'saiu pq não achou nenhum erro'
 				break
 
 	def testar(self):
@@ -85,10 +94,9 @@ class Descritor:
 	# gera o vetor de caracteristica
 	def gerar_vetor(self):
 		local = os.listdir(self.arquivo)
-
 		for im_file in local:
 			im_path = self.arquivo + '/' + im_file
-			im = cv2.imread(im_path)
+			im = cv2.imread(im_path, 0)
 
 			# redimensiona a imagem
 			im = imutils.resize(im, width=80, height=80)
@@ -100,6 +108,17 @@ class Descritor:
 			# concatena todos os vetores em um vetor só
 			vetor_aux = np.array(vetor_cara).ravel()
 
+			# Realizar a normalização dos dados
+			tam = len(vetor_aux)
+			vetor_aux_2 = []
+			for i in range(tam):
+				val = vetor_aux[i] - min(vetor_aux)
+				val2 = max(vetor_aux) - min(vetor_aux)
+				if val2 == 0:
+					vetor_aux_2.append(0)
+				else:
+					vetor_aux_2.append(val/float(val2))
+
 			string_aux = im_file.split('.')[0]
 			if 'nod' == string_aux:
 				cont = 1
@@ -107,7 +126,7 @@ class Descritor:
 				cont = 0
 
 			self.saidas_esperadas.append(cont)
-			self.vetor_caracteristica.append(vetor_aux)
+			self.vetor_caracteristica.append(vetor_aux_2)
 
 		return self.vetor_caracteristica, self.saidas_esperadas
 
@@ -142,6 +161,7 @@ for i in range(5):
 			# Separar os dados que compoem o vetor de caracteristica
 			entradas, saidas = descritorTreinamento.gerar_vetor()
 
+			print 'preencher variaveis...'
 			# Insere os dados obtidos anteriormente:
 			perceptronControlador.entradas = entradas
 			perceptronControlador.total_entradas = len(entradas)
@@ -175,13 +195,3 @@ for i in range(5):
 soma = sum(accuracy_array)
 result = soma / 5
 print 'resultado final ', result
-
-
-
-'''Informações para o relatorio:
-as figuras tem dimensões diferentes que variam de 64-65 (h e w) ou 60-65....
-- tamanho novo 80-80 
-
-gerar um vetor com as informações das imagens
-serão 80 vetores, com 80 informações em cada um
-'''
