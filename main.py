@@ -149,7 +149,7 @@ for i in range(5):
 	print 'Teste sendo realizado no: ', teste
 
 	# Instanciar a classe perceptron:
-	perceptronControlador = Perceptron(100, 0.1)
+	perceptronControlador = Perceptron(100, 1)
 	# Inicia os pesos com valores aleatorios, para o primeiro teste
 	perceptronControlador.preencher_vetor()
 	# Folder que serão utilizados para treinamento:
